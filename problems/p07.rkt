@@ -3,15 +3,18 @@
 (define (make-let-expr bindings body)
   (list 'let bindings body))
 
+(define (first-let-bindings expr)
+  (car (let-bindings expr)))
+
+(define (rest-let-bindings expr)
+  (cdr (let-bindings expr)))
+
 (define (let*->nested-lets expr)
-  (if (null? (cdr (let-bindings expr)))
-    (let->combination expr)
-    (let ((outer-let-binding
-            (list (car (let-bindings expr))))
-          ((inner-let-bindings
-             (cdr (let-bindings expr)))))
-      (let ((inner-let-body
-              (let*->nested-lets
-                (make-let-exprs (inner-let-bindings) (let-body expr)))))
-        (let->combination
-          (make-let-expr outer-let-binding inner-let-body))))))
+  (if (null? (let-bindings expr))
+    (sequence->exp (let-body expr))
+    (let->combination
+      (make-let-expr
+        (list (first-let-bindings expr))
+        (let*->nested-lets (make-let-expr
+                             (rest-let-bindings expr)
+                             (let-body expr)))))))
