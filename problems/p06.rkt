@@ -1,8 +1,8 @@
 #lang racket
 
 ; (let <- if let-expr is the entire let expression, 'let is (car let-expr)
-;   ((varname value-expr) <- (cadr let-expr); list of lists
-;    (varname-n value-expr-n)) <- next element (a list) in the list at (cadr let-expr)
+;   ((varname value-expr) <- (cadr let-expr); list of lists.
+;    (varname-n value-expr-n))
 ;   (body) <- (caddr let-expr) is the first expression to be evaluated as part of the let body.
 ;          <- (cddr let-expr) is the pointer to the list of all the expressions in the let body.
 ;   (body-n))
@@ -29,6 +29,6 @@
 
 (define (eval exp env)
   (cond ...
-        ((let-expr? exp)
-         (eval (let->expr exp) env))
+        ((let? exp)
+         (eval (let->combination exp) env))
         ...))
