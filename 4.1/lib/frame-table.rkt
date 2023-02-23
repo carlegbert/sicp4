@@ -39,10 +39,21 @@
             (set-cdr! result value)
             #t))))
 
+    (define (remove! key)
+      (define (iter cursor)
+        (cond ((null? (cdr cursor)) #f)
+              ((eq? (caadr cursor))
+               (set-cdr! cursor (cddr cursor))
+               #t)
+              (else
+                (iter (cdr cursor)))))
+      (iter table))
+
     (define (dispatch m)
       (cond ((eq? m 'lookup) lookup)
             ((eq? m 'insert!) insert!)
             ((eq? m 'set!) update!)
+            ((eq? m 'remove!) remove!)
             (else (error "Unknown operation -- TABLE" m))))
     dispatch))
 
