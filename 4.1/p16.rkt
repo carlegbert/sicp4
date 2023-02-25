@@ -1,34 +1,9 @@
 #lang racket
-;
-; (define (last-exp? seq) (null? (cdr seq)))
-;
-; (define (first-expr seq) (car seq))
-;
-; (define (rest-exps seq) (cdr seq))
-;
-; (define (make-begin seq) (cons 'begin seq))
-;
-; (define (sequence->expr seq)
-;   (cond ((null? seq) seq)
-;         ((last-exp? seq) (first-expr seq))
-;         (else (make-begin seq))))
 
-(define (tagged-list? expr tag)
-  (if (pair? expr)
-    (eq? (car expr) tag)
-    #f))
-
-(define (definition? expr)
-  (tagged-list? expr 'define))
-
-(define (make-lambda parameters body)
-  (cons 'lambda (cons parameters body)))
+(#%require "./lib/shared.rkt")
 
 (define (enclosing-environment env)
   (cdr env))
-
-(define (make-let bindings body)
-  (cons 'let (cons bindings body)))
 
 (define the-empty-environment '())
 
@@ -131,3 +106,12 @@
 ;     (add-one one)))
 ;
 ; (scan-out-defines expr-with-defines)
+;
+; result:
+; '(let ((one *unassigned*) (add-one *unassigned*)) (set! one 1) (set! add-one (lambda (x) (+ x one))) (add-one one))
+;
+; formatted:
+; (let ((one *unassigned*) (add-one *unassigned*))
+;   (set! one 1)
+;   (set! add-one (lambda (x) (+ x one)))
+;   (add-one one))
