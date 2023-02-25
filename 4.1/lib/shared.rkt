@@ -11,11 +11,14 @@
 (define (make-lambda parameters body)
   (cons 'lambda (cons parameters body)))
 
-(define (make-let bindings body)
-  (cons 'let (cons bindings body)))
+(define (make-set! var val)
+  (list 'set! var val))
+
+(define unassigned '*unassigned*)
 
 (provide
   tagged-list?
   definition?
   make-lambda
-  make-let)
+  make-set!
+  unassigned)
