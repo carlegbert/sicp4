@@ -88,15 +88,16 @@
   (define (iter unscanned-exprs body-exprs bindings)
     (cond ((null? unscanned-exprs)
            (make-expr-with-replaced-defines
-             (reverse bindings)
-             (reverse body-exprs)))
+             bindings
+             body-exprs))
           ((definition? (car unscanned-exprs))
            (iter (cdr unscanned-exprs)
                   body-exprs
-                 (cons (make-binding-from-define (car unscanned-exprs))
-                       bindings)))
+                 (append bindings
+                         (list (make-binding-from-define (car unscanned-exprs))))))
           (else (iter (cdr unscanned-exprs)
-                      (cons (car unscanned-exprs) body-exprs)
+                      (append (list (car unscanned-exprs))
+                              body-exprs)
                       bindings))))
   (iter procedure-body '() '()))
 
@@ -115,3 +116,8 @@
 ;   (set! one 1)
 ;   (set! add-one (lambda (x) (+ x one)))
 ;   (add-one one))
+
+; c.
+
+(define (make-procedure parameters body env)
+  (list 'procedure parameters (scan-out-defines body) env))
