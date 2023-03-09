@@ -39,8 +39,7 @@
            (map make-set-exprs
                  binding-mappings))
          (inner-let
-           (make-let intermediary-bindings (append set-exprs (let-body expr))))
-         )
+           (make-let intermediary-bindings (append set-exprs (let-body expr)))))
     (make-let declarations (list inner-let))))
 
 (define expr-to-be-transformed
