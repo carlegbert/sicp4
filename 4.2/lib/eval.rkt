@@ -1,7 +1,4 @@
-#lang racket
-
-(require rnrs/mutable-pairs-6)
-(require compatibility/mlist)
+#lang sicp
 
 (#%require "./util.rkt")
 (#%require "./environment.rkt")
@@ -23,7 +20,7 @@
         (else obj)))
 
 (define (delay-it expr env)
-  (mlist 'thunk expr env))
+  (list 'thunk expr env))
 
 (define (thunk? obj)
   (tagged-list? obj 'thunk))
@@ -112,13 +109,7 @@
   (if (not (null? (cdddr expr)))
     (cadddr expr)
     #f))
-
-(define (make-if predicate consequent alternative)
-  (list 'if predicate consequent alternative))
-
-(define (begin? expr)
-  (tagged-list? expr 'begin))
-
+(define (make-if predicate consequent alternative) (list 'if predicate consequent alternative)) (define (begin? expr) (tagged-list? expr 'begin))
 (define (begin-actions expr) (cdr expr))
 
 (define (last-exp? seq) (null? (cdr seq)))
@@ -196,10 +187,18 @@
 
 (define (applyl procedure arguments env)
   (cond ((primitive-procedure? procedure)
+         (display "beginning primitive eval...")
+         (newline)
+         (display (list-of-arg-values arguments env))
+         (newline)
          (apply-primitive-procedure
            procedure
            (list-of-arg-values arguments env)))
         ((compound-procedure? procedure)
+         (display "beginning compound eval...")
+         (newline)
+         (display (list-of-delayed-args arguments env))
+         (newline)
          (eval-sequence
            (procedure-body procedure)
            (extend-environment
@@ -232,6 +231,8 @@
          (applyl (actual-value (operator expr) env) (operands expr) env))
         (else
           (error "Unknown expression type -- EVAL" expr))))
+
+(#%require (only racket provide))
 
 (provide
   lazy-eval

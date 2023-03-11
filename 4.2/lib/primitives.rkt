@@ -1,6 +1,5 @@
-#lang racket
+#lang sicp
 
-(require compatibility/mlist)
 (#%require "./util.rkt")
 
 (define true #t)
@@ -11,32 +10,40 @@
 (define (primitive-procedure? proc)
   (tagged-list? proc 'primitive))
 
-(define (primitive-implementation proc) (mcar (mcdr proc)))
+(define (primitive-implementation proc) (cadr proc))
 
 (define primitive-procedures
-  (mlist (mlist 'car car)
-        (mlist 'cdr cdr)
-        (mlist 'cons cons)
-        (mlist 'null? null?)
-        (mlist '+ +)
-        (mlist '- -)
-        (mlist '* *)
-        (mlist 'exp exp)
-        (mlist 'length length)
-        (mlist 'list list)
-        (mlist 'list? list?)
-        (mlist 'pair? pair?)
-        (mlist 'exit exit)))
+  (list (list 'car car)
+        (list 'cdr cdr)
+        (list 'cons cons)
+        (list 'null? null?)
+        (list '+ +)
+        (list '- -)
+        (list '* *)
+        (list 'exp exp)
+        (list 'length length)
+        (list 'list list)
+        (list 'list? list?)
+        (list 'pair? pair?)
+        ;; add more as needed!
+        ))
 
 (define (primitive-procedure-names)
-  (mmap mcar primitive-procedures))
+  (map car primitive-procedures))
 
 (define (primitive-procedure-objects)
-  (mmap (lambda (proc) (mlist 'primitive (mcar (mcdr proc))))
+  (map (lambda (proc) (list 'primitive (cadr proc)))
        primitive-procedures))
 
 (define (apply-primitive-procedure proc args)
+  (newline)
+  (display (primitive-implementation proc))
+  (newline)
+  (display args)
+  (newline)
   (apply (primitive-implementation proc) args))
+
+(#%require (only racket provide))
 
 (provide
   primitive-procedure-names

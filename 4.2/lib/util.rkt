@@ -1,21 +1,12 @@
-#lang racket
+#lang sicp
 
-(require rnrs/mutable-pairs-6)
 
 (define (tagged-list? expr tag)
-  (cond ((mpair? expr)
-         (eq? (mcar expr) tag))
-        ((pair? expr)
-         (eq? (car expr) tag))
-        (else #f)))
+  (if (pair? expr)
+    (eq? (car expr) tag)
+    #f))
 
-(define (make-mutable item)
-  (if (pair? item)
-    (mcons (make-mutable (car item))
-           (make-mutable (cdr item)))
-    item))
+(#%require (only racket provide))
 
 (provide
-  tagged-list?
-  make-mutable)
-
+  tagged-list?)

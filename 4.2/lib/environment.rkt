@@ -1,36 +1,33 @@
-#lang racket
-
-(require rnrs/mutable-pairs-6)
-(require compatibility/mlist)
+#lang sicp
 
 (#%require "./util.rkt")
 (#%require "./primitives.rkt")
 
 (define (enclosing-environment env)
-  (mcdr env))
+  (cdr env))
 
 (define (first-frame env)
-  (mcar env))
+  (car env))
 
-(define the-empty-environment (mlist))
+(define the-empty-environment '())
 
 (define (make-frame variables values)
-  (mcons variables values))
+  (cons variables values))
 
 (define (frame-variables frame)
-  (mcar frame))
+  (car frame))
 
 (define (frame-values frame)
-  (mcdr frame))
+  (cdr frame))
 
 (define (add-binding-to-frame! var val frame)
-  (set-car! frame (mcons var (mcar frame)))
-  (set-cdr! frame (mcons val (mcdr frame))))
+  (set-car! frame (cons var (car frame)))
+  (set-cdr! frame (cons val (cdr frame))))
 
 (define (extend-environment vars vals base-env)
-  (if (= (mlength vars) (mlength vals))
-    (mcons (make-frame vars vals) base-env)
-    (if (< (mlength vars) (mlength vals))
+  (if (= (length vars) (length vals))
+    (cons (make-frame vars vals) base-env)
+    (if (< (length vars) (length vals))
       (error "Too many arguments supplied" vars vals)
       (error "Too few arguments supplied" vars vals))))
 
@@ -39,9 +36,9 @@
     (define (scan vars vals)
       (cond ((null? vars)
              (env-loop (enclosing-environment env)))
-            ((eq? var (mcar vars))
-             (mcar vals))
-            (else (scan (mcdr vars) (mcdr vals)))))
+            ((eq? var (car vars))
+             (car vals))
+            (else (scan (cdr vars) (cdr vals)))))
     (if (eq? env the-empty-environment)
       (error "Unbound variable" var)
       (let ((frame (first-frame env)))
@@ -54,9 +51,9 @@
     (define (scan vars vals)
       (cond ((null? vars)
              (env-loop (enclosing-environment env)))
-            ((eq? var (mcar vars))
+            ((eq? var (car vars))
              (set-car! vals val))
-            (else (scan (mcdr vars) (mcdr vals)))))
+            (else (scan (cdr vars) (cdr vals)))))
     (if (eq? env the-empty-environment)
       (error "Unbound variable" var)
       (let ((frame (first-frame env)))
@@ -69,9 +66,9 @@
     (define (scan vars vals)
       (cond ((null? vars)
              (add-binding-to-frame! var val frame))
-            ((eq? var (mcar vars))
+            ((eq? var (car vars))
              (set-car! vals val))
-            (else (scan (mcdr vars) (mcdr vals)))))
+            (else (scan (cdr vars) (cdr vals)))))
     (scan (frame-variables frame)
           (frame-values frame))))
 
@@ -85,6 +82,8 @@
     initial-env))
 
 (define the-global-environment (setup-environment))
+
+(#%require (only racket provide))
 
 (provide
   lookup-variable-value
