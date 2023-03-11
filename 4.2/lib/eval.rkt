@@ -11,10 +11,11 @@
 (define (force-it obj)
   (cond ((thunk? obj)
          (let ((result (actual-value (thunk-exp obj)
-                        (thunk-env obj))))
+                                     (thunk-env obj))))
            (set-car! obj 'evaluated-thunk)
            (set-car! (cdr obj) result)
-           (set-cdr! (cdr obj) '())))
+           (set-cdr! (cdr obj) '())
+           result))
         ((evaluated-thunk? obj)
          (thunk-value obj))
         (else obj)))
@@ -45,7 +46,7 @@
 (define (eval-sequence exps env)
   (cond ((last-exp? exps) (lazy-eval (first-expr exps) env))
         (else (lazy-eval (first-expr exps) env)
-              (eval-sequence (rest-exps exps env)))))
+              (eval-sequence (rest-exps exps) env))))
 
 (define (eval-assignment expr env)
   (set-variable-value! (assignment-variable expr)
@@ -187,18 +188,10 @@
 
 (define (applyl procedure arguments env)
   (cond ((primitive-procedure? procedure)
-         (display "beginning primitive eval...")
-         (newline)
-         (display (list-of-arg-values arguments env))
-         (newline)
          (apply-primitive-procedure
            procedure
            (list-of-arg-values arguments env)))
         ((compound-procedure? procedure)
-         (display "beginning compound eval...")
-         (newline)
-         (display (list-of-delayed-args arguments env))
-         (newline)
          (eval-sequence
            (procedure-body procedure)
            (extend-environment
@@ -228,7 +221,10 @@
         ((cond? expr)
          (lazy-eval (cond->if expr) env))
         ((application? expr)
-         (applyl (actual-value (operator expr) env) (operands expr) env))
+         (applyl
+           (actual-value (operator expr) env)
+           (operands expr)
+           env))
         (else
           (error "Unknown expression type -- EVAL" expr))))
 

@@ -36,11 +36,6 @@
        primitive-procedures))
 
 (define (apply-primitive-procedure proc args)
-  (newline)
-  (display (primitive-implementation proc))
-  (newline)
-  (display args)
-  (newline)
   (apply (primitive-implementation proc) args))
 
 (#%require (only racket provide))
