@@ -35,4 +35,6 @@
     (user-print output))
   (driver-loop))
 
-(driver-loop)
+(#%require (only racket provide))
+
+(provide driver-loop)
