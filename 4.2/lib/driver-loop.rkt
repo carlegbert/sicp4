@@ -3,6 +3,7 @@
 (#%require "./procedure.rkt")
 (#%require "./eval.rkt")
 (#%require "./environment.rkt")
+(#%require "./primitives.rkt")
 
 (define input-prompt ";;; L-Eval input:")
 (define output-prompt ";;; L-Eval output:")
@@ -19,12 +20,14 @@
   (newline))
 
 (define (user-print object)
-  (if (compound-procedure? object)
-    (display (list 'compound-procedure
-                   (procedure-parameters object)
-                   (procedure-body object)
-                   '<procedure-env>))
-    (display object)))
+  (cond ((lambda-pair? object)
+         (display-pair object))
+        ((compound-procedure? object)
+         (display (list 'compound-procedure
+                        (procedure-parameters object)
+                        (procedure-body object)
+                        '<procedure-env>)))
+        (else (display object))))
 
 (define (driver-loop)
   (prompt-for-input input-prompt)
