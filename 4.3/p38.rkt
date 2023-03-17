@@ -1,0 +1,11 @@
+(define (multiple-dwelling)
+  (let ((baker (amb 1 2 3 4 5))
+    (require
+      (distinct? (list baker cooper fletcher miller smith)))
+    (require (not (= baker 5)))
+    (require (> miller cooper))
+    (list (list 'baker baker)
+          (list 'cooper cooper)
+          (list 'fletcher fletcher)
+          (list 'miller miller)
+          (list 'smith smith))))
