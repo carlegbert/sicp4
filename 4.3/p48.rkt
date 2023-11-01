@@ -10,6 +10,7 @@
 (define verbs '(verb studies lectures eats sleeps))
 (define prepositions '(prep for to in by with))
 (define adjectives '(adj green big smart meretritious unctuous))
+(define adverbs '(adverb quickly poorly well doggedly))
 
 (define (parse-word word-list)
   (require (not (null? *unparsed*)))
@@ -43,10 +44,16 @@
 
 (define (parse-verb-phrase)
   (define (maybe-extend verb-phrase)
+    (let ((verb-phrase (maybe-extend-with-adverb verb-phrase)))
+      (amb verb-phrase
+           (maybe-extend (list 'verb-phrase
+                               verb-phrase
+                               (parse-prepositional-phrase))))))
+  (define (maybe-extend-with-adverb verb-phrase)
     (amb verb-phrase
-         (maybe-extend (list 'verb-phrase
-                             verb-phrase
-                             (parse-prepositional-phrase)))))
+         (list 'verb-phrase
+               verb-phrase
+               (parse-word adverbs))))
   (maybe-extend (parse-word verbs)))
 
 (define (parse-noun-phrase)
@@ -72,3 +79,5 @@
 (parse '(the green cat sleeps))
 (parse '(the big green cat sleeps))
 (parse '(the big green cat eats with the smart student))
+(parse '(the big green cat eats with the smart student quickly))
+(parse '(the big green cat eats quickly with the smart student))
