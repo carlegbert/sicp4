@@ -8,6 +8,11 @@
 (and (lives-near ?person-1 ?person-2)
      (lisp-value person-alphabetical-lt ?person-1 ?person-2))
 
+;; And a re-implementation of lives-near that should work for any input,
+;; but only assuming that the query is evaluated in normal order & that
+;; the recursive call to lives-near is never executed if the person-alphabetical-lt
+;; clause fails.
+
 (rule (lives-near ?person-1 ?person-2)
       (or
         (and
